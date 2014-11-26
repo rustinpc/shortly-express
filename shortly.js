@@ -2,6 +2,7 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 
 var db = require('./app/config');
@@ -21,26 +22,36 @@ app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
+app.use(session({secret: 'One Republic'}));
 
+var restrict = function(req, res, next) {
+  // console.log(JSON.stringify(req.session));
+  if (req.session.user) {
+    next();
+  } else {
+    // req.session.error = 'Access denied!';
+    res.redirect('/login');
+  }
+}
 
-app.get('/', 
+app.get('/', restrict,
 function(req, res) {
   res.render('index');
 });
 
-app.get('/create', 
+app.get('/create', restrict,
 function(req, res) {
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links', restrict,
 function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.send(200, links.models);
   });
 });
 
-app.post('/links', 
+app.post('/links',
 function(req, res) {
   var uri = req.body.url;
 
@@ -77,7 +88,34 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.post('/signup',
+  function(req, res) {
+    // get user and password from req.body
+    // insert into DB
+    new User({ username: req.body.username }).fetch().then(function(found) {
+      if (found) {
+        console.log('going into found statement: ',req.body);
+        res.send(200, found.attributes);
+      } else {
+        console.log('going into else statement: ',req.body);
+        var user = new User({
+          username: req.body.username,
+          password: req.body.password,// hash it?
+          salt:'abcd'
+        });
 
+        user.save().then(function(newUser) {
+          Users.add(newUser);
+          res.send(201, newUser);
+        });
+      }
+    });
+  }
+);
+
+app.get('/login', function(req, res){
+  res.send(200,'ok');
+});
 
 
 /************************************************************/
