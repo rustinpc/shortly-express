@@ -139,7 +139,6 @@ describe('', function() {
             // .where('title', '=', 'Rofl Zoo - Daily funny animal pictures')
             .where('title', '=', "Funny animal pictures, funny animals, funniest dogs")
             .then(function(urls) {
-              console.log('we are in the then statement');
               if (urls['0'] && urls['0']['title']) {
                 var foundTitle = urls['0']['title'];
               }
@@ -193,7 +192,7 @@ describe('', function() {
 
         requestWithSession(options, function(error, res, body) {
           var currentLocation = res.request.href;
-          expect(currentLocation).to.equal('http://www.roflzoo.com/');
+          expect(currentLocation).to.equal('http://roflzoo.com/');
           done();
         });
       });
