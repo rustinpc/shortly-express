@@ -25,7 +25,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(session({secret: 'One Republic'}));
 
 var restrict = function(req, res, next) {
-  // console.log(JSON.stringify(req.session));
+  console.log(JSON.stringify(req.session));
   if (req.session.user) {
     next();
   } else {
@@ -94,10 +94,10 @@ app.post('/signup',
     // insert into DB
     new User({ username: req.body.username }).fetch().then(function(found) {
       if (found) {
-        console.log('going into found statement: ',req.body);
+        // console.log('going into found statement: ',req.body);
         res.send(200, found.attributes);
       } else {
-        console.log('going into else statement: ',req.body);
+        // console.log('going into else statement: ',req.body);
         var user = new User({
           username: req.body.username,
           password: req.body.password,// hash it?
@@ -106,8 +106,25 @@ app.post('/signup',
 
         user.save().then(function(newUser) {
           Users.add(newUser);
-          res.send(201, newUser);
+          res.redirect('/');
         });
+      }
+    });
+  }
+);
+
+app.post('/login',
+  function(req, res) {
+    // get user and password from req.body
+    // insert into DB
+    new User({ username: req.body.username }).fetch().then(function(found) {
+      if (found) {
+        console.log('going into found statement: ',req.body);
+        res.redirect('/');
+        // res.send(200, found.attributes);
+      } else {
+        console.log('going into else statement: ',req.headers);
+        res.redirect('/login');
       }
     });
   }
