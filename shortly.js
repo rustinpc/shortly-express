@@ -142,6 +142,12 @@ app.post('/login',
   }
 );
 
+app.post('/logout', function(req, res){
+  console.log('logout');
+  req.session.destroy();
+  res.redirect('/login');
+});
+
 app.get('/login', function(req, res){
   res.render('login');
 });
