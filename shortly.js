@@ -26,7 +26,7 @@ app.use(session({secret: 'One Republic'}));
 
 var restrict = function(req, res, next) {
   console.log(JSON.stringify(req.session));
-  if (req.session.user) {
+  if (!!req.session.user) {
     next();
   } else {
     // req.session.error = 'Access denied!';
@@ -88,6 +88,8 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+
+
 app.post('/signup',
   function(req, res) {
     // get user and password from req.body
@@ -108,7 +110,7 @@ app.post('/signup',
 
         user.save().then(function(newUser) {
           Users.add(newUser);
-          res.redirect('/');
+          util.createSession(req, res, newUser);
         });
       }
     });
@@ -128,7 +130,7 @@ app.post('/login',
         console.log('passwords comparison: ',password, found.attributes.password);
 
         if (password === found.attributes.password) {
-          res.redirect('/');
+          util.createSession(req, res, found);
         } else {
           res.redirect('/login');
         }
