@@ -141,10 +141,12 @@ app.post('/login',
 );
 
 app.get('/login', function(req, res){
-  res.send(200,'ok');
+  res.render('login');
 });
 
-
+app.get('/signup', function(req, res){
+  res.render('signup');
+});
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
 // assume the route is a short code and try and handle it here.
