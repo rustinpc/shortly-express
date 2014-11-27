@@ -3,7 +3,7 @@ var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
 var session = require('express-session');
-
+var bcrypt = require('bcrypt-nodejs')
 
 var db = require('./app/config');
 var Users = require('./app/collections/users');
@@ -97,11 +97,13 @@ app.post('/signup',
         // console.log('going into found statement: ',req.body);
         res.send(200, found.attributes);
       } else {
-        // console.log('going into else statement: ',req.body);
+        // console.log('going into else statement: ',this.salt);
+        var salt = bcrypt.genSaltSync();
+        var password = bcrypt.hashSync(req.body.password, salt);
         var user = new User({
           username: req.body.username,
-          password: req.body.password,// hash it?
-          salt:'abcd'
+          password: password,// hash it?
+          salt: salt
         });
 
         user.save().then(function(newUser) {
@@ -119,11 +121,19 @@ app.post('/login',
     // insert into DB
     new User({ username: req.body.username }).fetch().then(function(found) {
       if (found) {
-        console.log('going into found statement: ',req.body);
-        res.redirect('/');
-        // res.send(200, found.attributes);
+        // console.log('going into found statement: ',found);
+
+        // use the salt and req.body.password to generate hash
+        var password = bcrypt.hashSync(req.body.password, found.attributes.salt);
+        console.log('passwords comparison: ',password, found.attributes.password);
+
+        if (password === found.attributes.password) {
+          res.redirect('/');
+        } else {
+          res.redirect('/login');
+        }
       } else {
-        console.log('going into else statement: ',req.headers);
+        // console.log('going into else statement: ',req.headers);
         res.redirect('/login');
       }
     });

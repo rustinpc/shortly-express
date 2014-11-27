@@ -246,19 +246,19 @@ describe('', function() {
         'method': 'POST',
         'uri': 'http://127.0.0.1:4568/signup',
         'json': {
-          'username': 'Svnh',
-          'password': 'Svnh'
+          'username': 'rustin',
+          'password': 'rustin'
         }
       };
 
       request(options, function(error, res, body) {
         db.knex('users')
-          .where('username', '=', 'Svnh')
+          .where('username', '=', 'rustin')
           .then(function(res) {
             if (res[0] && res[0]['username']) {
               var user = res[0]['username'];
             }
-            expect(user).to.equal('Svnh');
+            expect(user).to.equal('rustin');
             done();
           }).catch(function(err) {
             throw {
@@ -293,8 +293,8 @@ describe('', function() {
 
     beforeEach(function(done){
       new User({
-          'username': 'Phillip',
-          'password': 'Phillip'
+          'username': 'rustin',
+          'password': 'rustin'
       }).save().then(function(){
         done()
       });
@@ -305,8 +305,8 @@ describe('', function() {
         'method': 'POST',
         'uri': 'http://127.0.0.1:4568/login',
         'json': {
-          'username': 'Phillip',
-          'password': 'Phillip'
+          'username': 'rustin',
+          'password': 'rustin'
         }
       };
 

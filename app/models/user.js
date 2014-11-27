@@ -5,6 +5,7 @@ var Promise = require('bluebird');
 var User = db.Model.extend({
   tableName: 'users',
   hasTimestamps: true,
+  salt : bcrypt.genSaltSync()
   // defaults: {
   // },
   // initialize: function(){
